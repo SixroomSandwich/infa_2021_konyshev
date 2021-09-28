@@ -6,7 +6,7 @@ pygame.init()
 FPS = 30
 screen = pygame.display.set_mode((800, 500))
 
-
+#Background
 rect(screen, (135, 206, 235), (0, 0, 800, 250))
 rect(screen, (60, 179, 113), (0, 250, 800, 250))
 
