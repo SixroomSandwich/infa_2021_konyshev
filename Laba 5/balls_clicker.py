@@ -14,11 +14,24 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 GREEN = (0, 255, 0)
-MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
+
+'''Цвета для шариков'''
+DARK_VIOLET = (148, 0, 211)
+BLUE_VIOLET = (138, 43, 226)
+MEDIUM_PURPLE = (147, 112, 219)
+MEDIUM_ORCHID = (186, 85, 211)
+MAGENTA = (255, 0, 255)
+ORCHID = (218, 112, 214)
+VIOLET = (238, 130, 238)
+PLUM = (221, 160, 221)
+THISTLE = (216, 191, 216)
+LAVENDER = (230, 230, 250)
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+
+COLORS = [DARK_VIOLET, BLUE_VIOLET, MEDIUM_PURPLE, MEDIUM_ORCHID, MAGENTA, ORCHID, VIOLET, PLUM, THISTLE, LAVENDER]
 
 def draw_display(misses):
     '''Функция обновляет экран (для стирания шариков и для отображения верхней панели)'''
@@ -52,7 +65,8 @@ def new_ball():
     x = randint(100, 900)
     y = randint(300, 900)
     r = randint(10, 109)
-    color = COLORS[randint(0, 5)]
+    '''Цвет шарика зависит от его радиуса'''
+    color = COLORS[r // 10 - 1]
     circle(screen, color, (x, y), r)
 
 pygame.display.update()
@@ -88,11 +102,10 @@ while not finished:
                 misses += 1
                 
     draw_display(misses)
-    '''
-    if exist < maximum:
+    
+    if misses != 3:
         new_ball()
-    '''
-    new_ball()
+    
     pygame.display.update()
     
 
