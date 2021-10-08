@@ -25,7 +25,12 @@ def draw_display(misses):
 
     '''Здесь функция отображает оставшиеся "жизни" игрока'''
     for life_num in range(3 - misses):
-        rect(screen, RED, (450 + 150 * life_num, 50, 100, 100))
+        draw_heart(screen, RED, 450 + 150 * life_num, 50, 100, 100)
+
+def draw_heart(surface, color, x, y, width, heigth):
+    polygon(surface, color, [(x + 5, y + 25), (x + 50, y + 100), (x + 95, y + 25)])
+    circle(surface, color, (x + 30, y + 25), 25)
+    circle(surface, color, (x + 70, y + 25), 25)
 
 def new_ball():
     '''рисует новый шарик '''
@@ -41,7 +46,7 @@ clock = pygame.time.Clock()
 finished = False
 
 
-
+'''Переменные, отвечающие за кол-во набранных очков и за кол-во ошибок'''
 score = 0
 misses = 0
 
@@ -50,7 +55,6 @@ draw_display(misses)
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
-        ''''''
         if event.type == pygame.QUIT or misses == 3:
             '''Игра заканчивается когда пользователь закрывает окно, или он три раза нажал не по кружочку'''
             print("You're score is ", score)
