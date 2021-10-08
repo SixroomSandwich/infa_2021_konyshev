@@ -23,6 +23,11 @@ def draw_display(misses):
     screen.fill(BLACK)
     rect(screen, WHITE, (0, 0, 900, 200))
 
+    '''Здесь функция рисует текущий счёт игрока'''
+    myfont = pygame.font.SysFont('Comic Sans MS', 100)
+    textsurface = myfont.render(str(score), False, BLACK)
+    screen.blit(textsurface, (50, 25))
+
     '''Здесь функция отображает оставшиеся "жизни" игрока'''
     for life_num in range(3 - misses):
         draw_heart(screen, RED, 450 + 150 * life_num, 50, 100, 100)
@@ -56,6 +61,8 @@ finished = False
 '''Переменные, отвечающие за кол-во набранных очков и за кол-во ошибок'''
 score = 0
 misses = 0
+exist = 1
+maximum = 1
 
 draw_display(misses)
 
@@ -74,10 +81,14 @@ while not finished:
                 print("Gotcha! +", points, "points!")
                 score += points
             else:
-                '''Если игрок кликнул, но не попал по кружочку, то кол-во его ощибок увеличивается на 1'''
+                '''Если игрок кликнул, но не попал по кружочку, то кол-во его ошибок увеличивается на 1'''
                 misses += 1
                 
     draw_display(misses)
+    '''
+    if exist < maximum:
+        new_ball()
+    '''
     new_ball()
     pygame.display.update()
     
