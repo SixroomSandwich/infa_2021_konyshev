@@ -2,6 +2,8 @@ import pygame
 from pygame.draw import *
 from random import randint
 from math import sqrt
+import time
+
 pygame.init()
 
 FPS = 2
@@ -72,6 +74,7 @@ while not finished:
         if event.type == pygame.QUIT or misses == 3:
             '''Игра заканчивается когда пользователь закрывает окно, или он три раза нажал не по кружочку'''
             print("You're score is ", score)
+            time.sleep(1)
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             '''Проверяем, кликнул ли пользователь внутрь шарика'''
