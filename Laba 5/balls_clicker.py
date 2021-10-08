@@ -28,6 +28,13 @@ def draw_display(misses):
         draw_heart(screen, RED, 450 + 150 * life_num, 50, 100, 100)
 
 def draw_heart(surface, color, x, y, width, heigth):
+    '''
+    Функция рисует сердечко
+    surface - объект pygame.Surface
+    color - цвет сердечка
+    x, y - координаты верхнего левого угла прямоугольнгика, в который вписано сердечко
+    width, height - ширина и высота сердечка
+    '''
     polygon(surface, color, [(x + 5, y + 25), (x + 50, y + 100), (x + 95, y + 25)])
     circle(surface, color, (x + 30, y + 25), 25)
     circle(surface, color, (x + 70, y + 25), 25)
@@ -70,9 +77,9 @@ while not finished:
                 '''Если игрок кликнул, но не попал по кружочку, то кол-во его ощибок увеличивается на 1'''
                 misses += 1
                 
-
+    draw_display(misses)
     new_ball()
     pygame.display.update()
-    draw_display(misses)
+    
 
 pygame.quit()
