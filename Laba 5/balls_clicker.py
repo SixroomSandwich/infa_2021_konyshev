@@ -6,7 +6,7 @@ import time
 
 pygame.init()
 
-FPS = 20
+FPS = 30
 display_height = 900
 display_width = 900
 panel_height = 200
@@ -89,8 +89,8 @@ def new_coordinates():
     coordinates = [0] * 5
     coordinates[0] = randint(109, display_width - 109)
     coordinates[1] = randint(panel_height + 109, display_height - 109)
-    coordinates[2] = randint(5, 20)
-    coordinates[3] = randint(5, 20)
+    coordinates[2] = (-1) ** randint(0, 1) * randint(5, 10)
+    coordinates[3] = (-1) ** randint(0, 1) * randint(5, 10)
     coordinates[4] = randint(10, 109)
 
     return coordinates
@@ -117,13 +117,19 @@ finished = False
 '''Переменные, отвечающие за кол-во набранных очков и за кол-во ошибок'''
 score = 0
 misses = 0
+misses_flag = 0
+gotcha_flag = 0
 
+balls_number = 2
 '''Переменные, отвечающие за время жизни шарика'''
-max_life_time = 30
-life_time = 0
+max_life_time = 100
+life_time = [0] * balls_number
+deth_counter = [0] * balls_number
 
 draw_display(misses)
-coordinates = new_coordinates()
+coordinates = [[0] * 5 for i in range(balls_number)]
+for num in range(balls_number):
+    coordinates[num] = new_coordinates()
 
 while not finished:
     clock.tick(FPS)
@@ -134,45 +140,56 @@ while not finished:
             time.sleep(1)
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            '''Проверяем, кликнул ли пользователь внутрь шарика'''
-            if sqrt((event.pos[0] - coordinates[0])**2 + (event.pos[1] - coordinates[1])**2) <= coordinates[4]:
-                '''Считаем очки (чем меньше радиус шарика, по которому мы попали, тем больше очков)'''
-                points = (119 - coordinates[4]) // 10
-                print("Gotcha! +", points, "points!")
-                score += points
-            else:
-                '''Если игрок кликнул, но не попал по кружочку, то кол-во его ошибок увеличивается на 1'''
-                misses += 1
+            for num in range(balls_number):
+                '''Проверяем, кликнул ли пользователь внутрь шарика'''
+                if sqrt((event.pos[0] - coordinates[num][0])**2 + (event.pos[1] - coordinates[num][1])**2) <= coordinates[num][4]:
+                    '''Считаем очки (чем меньше радиус шарика, по которому мы попали, тем больше очков)'''
+                    points = (119 - coordinates[num][4]) // 10
+                    print("Gotcha! +", points, "points!")
+                    score += points
+                    deth_counter[num] += 1
+                    gotcha_flag = 1
+                else:
+                    '''Если игрок кликнул, но не попал по кружочку, то кол-во его ошибок увеличивается на 1'''
+                    misses_flag = 1
 
+    if gotcha_flag == 0 and misses_flag == 1:
+        misses += misses_flag
+    misses_flag = 0
+    gotcha_flag = 0
     draw_display(misses)
-    
-    if points != 0:
-        '''Игрок попал по шарику, создаётся новый шарик'''
-        coordinates = new_coordinates()
-        draw_ball(coordinates[0], coordinates[1], coordinates[4])
-        life_time = 0
+    for num in range(balls_number):    
+        if deth_counter[num] != 0:
+            '''Игрок попал по шарику, создаётся новый шарик'''
+            coordinates[num] = new_coordinates()
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
+            for i in range(balls_number):
+                if i != num:
+                    life_time[i] -= 20
+                life_time[num] = 0
+            deth_counter[num] = 0
 
-    elif life_time == max_life_time:
-        '''шарик умирает, у игрока теряется жизнь'''
-        coordinates = new_coordinates()
-        draw_ball(coordinates[0], coordinates[1], coordinates[4])
-        misses += 1
-        life_time = 0
+        elif life_time[num] == max_life_time:
+            '''шарик умирает, у игрока теряется жизнь'''
+            coordinates[num] = new_coordinates()
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
+            misses += 1
+            life_time[num] = 0
 
-    elif misses != 3:
-        '''Шарик перемещается'''
-        coordinates = ball_moving(coordinates[0], coordinates[1], coordinates[2], coordinates[3], coordinates[4]) 
-        draw_ball(coordinates[0], coordinates[1], coordinates[4])
-        life_time += 1
-        pygame.display.flip()
-    
-    '''Игра заканчивается, если у игрока не остаётся жизней'''
+        elif misses != 3:
+            '''Шарик перемещается'''
+            coordinates[num] = ball_moving(coordinates[num][0], coordinates[num][1], coordinates[num][2], coordinates[num][3], coordinates[num][4]) 
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
+            life_time[num] += 1
+            pygame.display.flip()
+            
+        '''Игра заканчивается, если у игрока не остаётся жизней'''
     if misses == 3:
 
         draw_endgame_display(score)
         pygame.display.flip()
         time.sleep(5)
-    
+            
     pygame.display.flip()
 
 pygame.quit()
