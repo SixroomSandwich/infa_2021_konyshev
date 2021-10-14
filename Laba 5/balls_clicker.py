@@ -45,7 +45,21 @@ def draw_display(misses):
 
     '''Здесь функция отображает оставшиеся "жизни" игрока'''
     for life_num in range(3 - misses):
-        draw_heart(screen, RED, 450 + 150 * life_num, 50, 100, 100)
+            draw_heart(screen, RED, 450 + 150 * life_num, 50, 100, 100)
+
+def draw_endgame_display(score):
+    '''Функция рисует дисплей после проигрыша'''
+    screen.fill(BLACK)
+    rect(screen, WHITE, (0, 0, 900, 200))
+
+    myfont = pygame.font.SysFont('Comic Sans MS', 45)
+    
+    text_letters = myfont.render("GAME OVER. YOU'R SCORE IS ", False, BLACK)
+    screen.blit(text_letters, (50, 50))
+
+    text_score = myfont.render(str(score), False, RED)
+    screen.blit(text_score, (725, 50))
+    
 
 def draw_heart(surface, color, x, y, width, heigth):
     '''
@@ -84,10 +98,10 @@ draw_display(misses)
 
 while not finished:
     clock.tick(FPS)
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT or misses == 3:
             '''Игра заканчивается когда пользователь закрывает окно, или он три раза нажал не по кружочку'''
-            print("You're score is ", score)
             time.sleep(1)
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -100,13 +114,17 @@ while not finished:
             else:
                 '''Если игрок кликнул, но не попал по кружочку, то кол-во его ошибок увеличивается на 1'''
                 misses += 1
-                
+
     draw_display(misses)
     
     if misses != 3:
         new_ball()
+        pygame.display.flip()
+    else:
+        draw_endgame_display(score)
+        pygame.display.flip()
+        time.sleep(5)
     
-    pygame.display.update()
-    
+    pygame.display.flip()
 
 pygame.quit()
