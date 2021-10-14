@@ -147,23 +147,28 @@ while not finished:
     draw_display(misses)
     
     if points != 0:
+        '''Игрок попал по шарику, создаётся новый шарик'''
         coordinates = new_coordinates()
         draw_ball(coordinates[0], coordinates[1], coordinates[4])
         life_time = 0
 
     elif life_time == max_life_time:
+        '''шарик умирает, у игрока теряется жизнь'''
         coordinates = new_coordinates()
         draw_ball(coordinates[0], coordinates[1], coordinates[4])
         misses += 1
         life_time = 0
 
     elif misses != 3:
+        '''Шарик перемещается'''
         coordinates = ball_moving(coordinates[0], coordinates[1], coordinates[2], coordinates[3], coordinates[4]) 
         draw_ball(coordinates[0], coordinates[1], coordinates[4])
         life_time += 1
         pygame.display.flip()
     
+    '''Игра заканчивается, если у игрока не остаётся жизней'''
     if misses == 3:
+
         draw_endgame_display(score)
         pygame.display.flip()
         time.sleep(5)
