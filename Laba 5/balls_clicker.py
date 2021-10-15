@@ -147,6 +147,14 @@ def ball_moving(x, y, v_x, v_y, r, kind):
 
     return [x, y, v_x, v_y, r, kind]
 
+def read_file(file_name):
+    file = [] * 10
+    inp = open(file_name, encoding = 'utf8')
+    lines = inp.read().split('\n')
+    for each_line in lines:
+        file.append(int(each_line))
+    inp.close()
+    return file
 
 screen = pygame.display.set_mode((display_height, display_width))
 pygame.display.update()
@@ -245,5 +253,23 @@ while not finished:
         time.sleep(5)
             
     pygame.display.flip()
+
+'''Здесь программа записывает счёт в общий рейтинг'''
+file = read_file('top.txt')
+print(file)
+for i  in range(10):
+    if score >= int(file[i]):
+        smth = score
+        score = file[i]
+        file[i] = smth
+
+print(file)
+
+out = open('top.txt', 'w')
+for i in range(10):
+    out.write(str(file[i]) + '\n')
+out.close()
+
+print('Noted')
 
 pygame.quit()
