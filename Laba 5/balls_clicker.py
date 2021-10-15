@@ -208,6 +208,9 @@ while not finished:
                 misses -= 1
             '''Игрок попал по шарику, создаётся новый шарик'''
             coordinates[num] = new_coordinates()
+            for i in range(balls_number):
+                if num != 1 and coordinates[i][5] == 1:
+                    coordinates[num][5] = 0
             draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4], coordinates[num][5])
             '''Так же продлевается время жизни оставшихся шариков'''
             for i in range(balls_number):
@@ -219,6 +222,9 @@ while not finished:
         elif life_time[num] == max_life_time:
             '''шарик умирает, у игрока теряется жизнь'''
             coordinates[num] = new_coordinates()
+            for i in range(balls_number):
+                if num != 1 and coordinates[i][5] == 1:
+                    coordinates[num][5] = 0
             draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4], coordinates[num][5])
             if coordinates[num][5] == 0:
                 misses += 1
