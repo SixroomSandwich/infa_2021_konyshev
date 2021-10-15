@@ -52,7 +52,7 @@ COLORS = [DARK_VIOLET, BLUE_VIOLET, MEDIUM_PURPLE, MEDIUM_ORCHID, MAGENTA, ORCHI
 
 def draw_display(misses):
     '''
-    Функция обновляет экран (стиранает шарики и для орисует верхнюю панель)
+    Функция обновляет экран (стирает шарики и рисует верхнюю панель)
     misses - кол-во ошибок (кол-во жизней = 3 - кол-во ошибок)
     '''
     screen.fill(BLACK)
