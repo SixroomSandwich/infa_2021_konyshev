@@ -65,7 +65,7 @@ def draw_display(misses):
 
     '''Здесь функция рисует оставшиеся "жизни" игрока'''
     for life_num in range(3 - misses):
-            draw_heart(screen, RED, panel_width // 2 + panel_width // 6 * life_num, panel_height // 4, panel_width // 9, panel_height // 9)
+            draw_heart(screen, RED, panel_width // 2 + panel_width // 6 * life_num, panel_height // 4, panel_width // 9, panel_height // 2)
 
 def draw_endgame_display(score):
     '''
@@ -85,7 +85,7 @@ def draw_endgame_display(score):
     text_score = myfont.render(str(score), False, RED)
     screen.blit(text_score, (725, 50))
     
-def draw_heart(surface, color, x, y, width, heigth):
+def draw_heart(surface, color, x, y, width, height):
     '''
     Функция рисует сердечко
     surface - объект pygame.Surface
@@ -93,38 +93,47 @@ def draw_heart(surface, color, x, y, width, heigth):
     x, y - координаты верхнего левого угла прямоугольнгика, в который вписано сердечко
     width, height - ширина и высота сердечка
     '''
-    polygon(surface, color, [(x + 5, y + 25), (x + 50, y + 100), (x + 95, y + 25)])
-    circle(surface, color, (x + 30, y + 25), 25)
-    circle(surface, color, (x + 70, y + 25), 25)
+    polygon(surface, color, [(x + width // 20, y + height // 4), (x + width // 2, y + height), (x + width * 19 // 20, y + height // 4)])
+    circle(surface, color, (x + width * 3 // 10, y + height // 4), width // 4)
+    circle(surface, color, (x + width * 7 // 10, y + height // 4), width // 4)
 
-def draw_ball(x, y, r):
+def draw_ball(x, y, r, kind):
     '''
     Рисует шарик 
     x, y - координаты центра шарика
     r - радиус шарика
     Цвет шарика зависит от его радиуса
     '''
-    color = COLORS[r // 10 - 1]
-    circle(screen, color, (x, y), r)
+    if kind == 0:
+        color = COLORS[r // 10 - 1]
+        circle(screen, color, (x, y), r)
+    else:
+        draw_heart(screen, RED, x - r, y - r, 2 * r, 2 * r)
 
 def new_coordinates():
     '''
     Функция отдаёт рандомные координаты, скорости и размеры для шариков
-    На выходе отдаёт массив из пяти эллементов:
+    На выходе отдаёт массив из шести эллементов:
     0, 1 эллементы - координаты центра шарика x, y
     2,3 эллементы - скорости вдоль каждой оси v_x, v_y
     4 эллемент - радиус шарика r
+    5 эллемент - явлеяется ли шарик сердечком. 0 - если он шарик, 1 - если сердечко
     '''
-    coordinates = [0] * 5
+    coordinates = [0] * 6
     coordinates[0] = randint(109, display_width - 109)
     coordinates[1] = randint(panel_height + 109, display_height - 109)
     coordinates[2] = (-1) ** randint(0, 1) * randint(5, 10)
     coordinates[3] = (-1) ** randint(0, 1) * randint(5, 10)
-    coordinates[4] = randint(10, 109)
+    
+    coordinates[5] = randint(2, 11) // 10
+    if coordinates[5] == 1:
+        coordinates[4] = 40
+    else:
+        coordinates[4] = randint(10, 109)
 
     return coordinates
 
-def ball_moving(x, y, v_x, v_y, r):
+def ball_moving(x, y, v_x, v_y, r, kind):
     '''
     Функция отдаёт новые координаты шарика и скорости, в зависимости от его скоростей и расположения относительно стенок
     '''
@@ -136,7 +145,7 @@ def ball_moving(x, y, v_x, v_y, r):
         v_y = -v_y
     y += v_y
 
-    return [x, y, v_x, v_y, r]
+    return [x, y, v_x, v_y, r, kind]
 
 
 screen = pygame.display.set_mode((display_height, display_width))
@@ -146,7 +155,7 @@ finished = False
 draw_display(misses)
 
 '''Задаем параметры для всех шариков'''
-coordinates = [[0] * 5 for i in range(balls_number)]
+coordinates = [[0] * 6 for i in range(balls_number)]
 for num in range(balls_number):
     coordinates[num] = new_coordinates()
 
@@ -161,14 +170,18 @@ while not finished:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             for num in range(balls_number):
-                '''Проверяем, кликнул ли пользователь внутрь шарика'''
-                if sqrt((event.pos[0] - coordinates[num][0])**2 + (event.pos[1] - coordinates[num][1])**2) <= coordinates[num][4]:
+                '''Проверяем, кликнул ли пользователь внутрь сердечка'''
+                if coordinates[num][5] == 1 and abs(event.pos[0] - coordinates[num][0]) <= coordinates[num][4] and abs(event.pos[1] - coordinates[num][1] <= coordinates[num][4]):
+                    '''Если было нажато сердечко, то отмечаем смерть сердечка числом 2'''
+                    deth_counter[num] = 2
+                    gotcha_flag = 1
+                elif coordinates[num][5] == 0 and sqrt((event.pos[0] - coordinates[num][0])**2 + (event.pos[1] - coordinates[num][1])**2) <= coordinates[num][4]:
                     '''Считаем очки (чем меньше радиус шарика, по которому мы попали, тем больше очков)'''
                     points = (119 - coordinates[num][4]) // 10
                     print("Gotcha! +", points, "points!")
                     score += points
                     '''В специальном массиве отмечаем смерть шарика с номеров num'''
-                    deth_counter[num] += 1
+                    deth_counter[num] = 1
                     '''
                     Фиксируем попадание по одному из шариков (В дальнейшем это используется, чтобы понять, что игрок попал по шарику,
                     так как для других шариков программа зафиксирует промах)
@@ -186,30 +199,35 @@ while not finished:
         misses += 1
     misses_flag = 0
     gotcha_flag = 0
+
     draw_display(misses)
     for num in range(balls_number):    
         if deth_counter[num] != 0:
+            '''Проверяем, попал ли игрок по сердечку, если да, то даём ему жизнь, максимум 3'''
+            if deth_counter[num] == 2 and misses > 0:
+                misses -= 1
             '''Игрок попал по шарику, создаётся новый шарик'''
             coordinates[num] = new_coordinates()
-            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4], coordinates[num][5])
             '''Так же продлевается время жизни оставшихся шариков'''
             for i in range(balls_number):
                 if i != num:
                     life_time[i] -= max_life_time // 5
-                life_time[num] = 0
+            life_time[num] = 0
             deth_counter[num] = 0
 
         elif life_time[num] == max_life_time:
             '''шарик умирает, у игрока теряется жизнь'''
             coordinates[num] = new_coordinates()
-            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
-            misses += 1
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4], coordinates[num][5])
+            if coordinates[num][5] == 0:
+                misses += 1
             life_time[num] = 0
 
         elif misses != 3:
             '''Шарик перемещается'''
-            coordinates[num] = ball_moving(coordinates[num][0], coordinates[num][1], coordinates[num][2], coordinates[num][3], coordinates[num][4]) 
-            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4])
+            coordinates[num] = ball_moving(coordinates[num][0], coordinates[num][1], coordinates[num][2], coordinates[num][3], coordinates[num][4], coordinates[num][5]) 
+            draw_ball(coordinates[num][0], coordinates[num][1], coordinates[num][4], coordinates[num][5])
             life_time[num] += 1
             pygame.display.flip()
             
