@@ -152,7 +152,7 @@ def read_file(file_name):
     inp = open(file_name, encoding = 'utf8')
     lines = inp.read().split('\n')
     for each_line in lines:
-        file.append(int(each_line))
+        file.append(str(each_line))
     inp.close()
     return file
 
@@ -256,18 +256,24 @@ while not finished:
 
 '''Здесь программа записывает счёт в общий рейтинг'''
 file = read_file('top.txt')
-print(file)
-for i  in range(10):
-    if score >= int(file[i]):
-        smth = score
-        score = file[i]
-        file[i] = smth
+top = [0] * 10
+for i in range(10):
+    a = int(file[i])
+    top[i] = a
 
-print(file)
+for i in range(10):
+    if score >= top[i]:
+        smth = score
+        score = top[i]
+        top[i] = smth
+
+print(top)
 
 out = open('top.txt', 'w')
-for i in range(10):
-    out.write(str(file[i]) + '\n')
+for i in range(9):
+    out.write(str(top[i]) + '\n')
+
+out.write(str(top[9]))
 out.close()
 
 print('Noted')
