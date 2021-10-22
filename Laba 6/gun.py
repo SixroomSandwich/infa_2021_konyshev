@@ -38,6 +38,7 @@ class Ball:
         self.vy = 0
         self.color = choice(GAME_COLORS)
         self.live = 30
+        self.timer = 0
 
     def move(self):
         """Переместить мяч по прошествии единицы времени.
@@ -49,10 +50,17 @@ class Ball:
         # FIXME
         if self.x >= 800:
             self.vx = -self.vx
-        if self.y >= 550 or self.y <= 0:
-            self.vy = -self.vy
+        if self.y >= 550:
+            if abs(self.vy) <= 5:
+                self.vy = 0
+            self.vy = -self.vy // 2
+            self.vx = self.vx // 2
+            self.y = 550
 
         self.vy -= 5
+
+        if abs(self.vx) <= 5:
+            self.vx = 0
 
         self.x += self.vx
         self.y -= self.vy
@@ -70,7 +78,7 @@ class Ball:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
         # FIXME
-        return (self.x - obj.x)**2 + (self.y - obj.y)**2 <= (self.r - obj.r)**2
+        return (self.x - obj.x)**2 + (self.y - obj.y)**2 <= (self.r + obj.r)**2
 
 class Gun:
     def __init__(self, screen):
@@ -123,7 +131,8 @@ class Gun:
 
 
 class Target:
-    def __init__(self):
+    def __init__(self, screen):
+        self.screen = screen
         self.points = 0
         self.live = 1
         self.new_target()
@@ -132,17 +141,18 @@ class Target:
 
     def new_target(self):
         """ Инициализация новой цели. """
-        x = self.x = rnd(600, 780)
+        x = self.x = rnd(600, 680)
         y = self.y = rnd(300, 550)
         r = self.r = rnd(2, 50)
         color = self.color = RED
+        self.live = 1
 
     def hit(self, points = 1):
         """Попадание шарика в цель."""
         self.points += points
 
     def draw(self):
-        pass
+        pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.r)
 
 
 pygame.init()
@@ -152,7 +162,7 @@ balls = []
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target()
+target = Target(screen)
 finished = False
 
 while not finished:
