@@ -98,8 +98,7 @@ class Gun:
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
-        global balls, bullet
-        bullet += 1
+        global balls
         new_ball = Ball(self.screen)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
@@ -153,6 +152,7 @@ class Target:
         color = self.color = RED
         self.live = 1
 
+
     def hit(self, points = 1):
         """Попадание шарика в цель."""
         self.points += points
@@ -163,20 +163,27 @@ class Target:
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-bullet = 0
 balls = []
+score = 0
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target(screen)
+target_1 = Target(screen)
+target_2 = Target(screen)
 finished = False
 
 while not finished:
     screen.fill(WHITE)
     gun.draw()
-    target.draw()
+    target_1.draw()
+    target_2.draw()
     for b in balls:
         b.draw()
+
+    myfont = pygame.font.SysFont('Comic Sans MS', 100)
+    textsurface = myfont.render(str(score), False, BLACK)
+    screen.blit(textsurface, (50, 25))
+    
     pygame.display.update()
 
     clock.tick(FPS)
@@ -197,10 +204,17 @@ while not finished:
             if b.death_timer >= 10:
                 b.color = WHITE
 
-        if b.hittest(target) and target.live:
-            target.live = 0
-            target.hit()
-            target.new_target()
+        if b.hittest(target_1) and target_1.live:
+            target_1.live = 0
+            target_1.hit()
+            target_1.new_target()
+            score += 1
+
+        if b.hittest(target_2) and target_2.live:
+            target_2.live = 0
+            target_2.hit()
+            target_2.new_target()
+            score += 1
     gun.power_up()
 
 pygame.quit()
