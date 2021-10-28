@@ -146,12 +146,22 @@ class Target:
 
     def new_target(self):
         """ Инициализация новой цели. """
-        x = self.x = rnd(600, 680)
-        y = self.y = rnd(300, 550)
+        x = self.x = rnd(300, 680)
+        y = self.y = rnd(150, 400)
         r = self.r = rnd(10, 50)
         color = self.color = RED
         self.live = 1
+        vx = self.vx = (-1)**(2 % rnd(1, 2)) * rnd(5, 15)
+        vy = self.vy = (-1)**(2 % rnd(1, 2)) * rnd(5, 15)
 
+    def move(self):
+        if self.x >= 700 or self.x <= 250:
+            self.vx = -self.vx
+
+        if self.y >= 450 or self.y <= 100:
+            self.vy = -self.vy
+        self.x += self.vx
+        self.y += self.vy
 
     def hit(self, points = 1):
         """Попадание шарика в цель."""
@@ -183,7 +193,7 @@ while not finished:
     myfont = pygame.font.SysFont('Comic Sans MS', 100)
     textsurface = myfont.render(str(score), False, BLACK)
     screen.blit(textsurface, (50, 25))
-    
+
     pygame.display.update()
 
     clock.tick(FPS)
@@ -215,6 +225,10 @@ while not finished:
             target_2.hit()
             target_2.new_target()
             score += 1
+
+    target_1.move()
+    target_2.move()
+
     gun.power_up()
 
 pygame.quit()
