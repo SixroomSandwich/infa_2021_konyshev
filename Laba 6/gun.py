@@ -39,6 +39,7 @@ class Ball:
         self.color = choice(GAME_COLORS)
         self.live = 30
         self.timer = 0
+        self.death_timer = 0
 
     def move(self):
         """Переместить мяч по прошествии единицы времени.
@@ -143,7 +144,7 @@ class Target:
         """ Инициализация новой цели. """
         x = self.x = rnd(600, 680)
         y = self.y = rnd(300, 550)
-        r = self.r = rnd(2, 50)
+        r = self.r = rnd(10, 50)
         color = self.color = RED
         self.live = 1
 
@@ -186,6 +187,11 @@ while not finished:
 
     for b in balls:
         b.move()
+        if abs(b.vx) <= 1 and b.y >= 550:
+            b.death_timer += 1
+            if b.death_timer >= 10:
+                b.color = WHITE
+
         if b.hittest(target) and target.live:
             target.live = 0
             target.hit()
