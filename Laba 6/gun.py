@@ -1,7 +1,7 @@
 import math
 from random import choice
 from random import randint as rnd
-
+import time
 import pygame
 
 
@@ -158,7 +158,7 @@ class Target:
         """ Инициализация новой цели. """
         x = self.x = rnd(300, 680)
         y = self.y = rnd(250, 600)
-        r = self.r = rnd(10, 50)
+        r = self.r = rnd(30, 50)
         color = self.color = RED
         self.live = 1
         vx = self.vx = (-1)**(2 % rnd(1, 2)) * rnd(5, 15)
@@ -181,6 +181,7 @@ class Target:
         pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.r)
 
 def draw_display():
+
     pygame.draw.line(screen, BLACK, (0, 195), (800, 195))
     '''Пишем кол-во очков, набранные игроком'''
     myfont = pygame.font.SysFont('Comic Sans MS', 100)
@@ -194,15 +195,20 @@ def draw_display():
     text_bullets_num = myfont.render(str(bullets), False, BLACK)
     screen.blit(text_bullets_num, (450, 25))
 
+
 def draw_endgame_display():
+    screen.fill(WHITE)
     pygame.draw.line(screen, BLACK, (0, 195), (800, 195))
 
-    myfont = pygame.font.SysFont('Comic Sans MS', 100)
+    myfont = pygame.font.SysFont('Comic Sans MS', 50)
 
-    text = myfont.render("Game over! You'r score is ")
-    screen.blit(text, (50, 25))
+    text = myfont.render("Game over! You'r score is ", False, BLACK)
+    screen.blit(text, (25, 25))
     text_score = myfont.render(str(score), False, BLACK)
-    screen.blit(text_score, (200, 25))
+    screen.blit(text_score, (630, 25))
+
+    pygame.display.update()
+    time.sleep(5)
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -265,5 +271,7 @@ while (not finished) and death_counter < 10:
     target_2.move()
 
     gun.power_up()
+
+draw_endgame_display()
 
 pygame.quit()
