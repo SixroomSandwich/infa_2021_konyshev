@@ -96,7 +96,7 @@ class Gun:
         if pressed[pygame.K_w] and self.y > 205:
            self.y -= 50
         if pressed[pygame.K_s] and self.y < 745:
-           self.y += 50
+           self.y += 50         
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -110,6 +110,7 @@ class Gun:
         global balls, bullets
         new_ball = Ball(self.screen)
         new_ball.r += 5
+        new_ball.y = self.y
         self.an = math.atan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = - self.f2_power * math.sin(self.an)
@@ -192,6 +193,16 @@ def draw_display():
 
     text_bullets_num = myfont.render(str(bullets), False, BLACK)
     screen.blit(text_bullets_num, (450, 25))
+
+def draw_endgame_display():
+    pygame.draw.line(screen, BLACK, (0, 195), (800, 195))
+
+    myfont = pygame.font.SysFont('Comic Sans MS', 100)
+
+    text = myfont.render("Game over! You'r score is ")
+    screen.blit(text, (50, 25))
+    text_score = myfont.render(str(score), False, BLACK)
+    screen.blit(text_score, (200, 25))
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
