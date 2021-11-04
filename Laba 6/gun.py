@@ -88,6 +88,15 @@ class Gun:
         self.f2_on = 0
         self.an = 1
         self.color = GREY
+        self.y = 450
+
+
+    def move(self, event):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_w] and self.y > 205:
+           self.y -= 50
+        if pressed[pygame.K_s] and self.y < 745:
+           self.y += 50
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -113,7 +122,7 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((event.pos[1]-450) / (event.pos[0]-20))
+            self.an = math.atan((event.pos[1]-self.y) / (event.pos[0]-20))
         if self.f2_on:
             self.color = RED
         else:
@@ -121,7 +130,7 @@ class Gun:
 
     def draw(self):
         # FIXIT don't know how to do it
-        pygame.draw.line(self.screen, self.color, [20, 450], [20 + self.f2_power * math.cos(self.an), 450 + self.f2_power * math.sin(self.an)], 3)
+        pygame.draw.line(self.screen, self.color, [20, self.y], [20 + self.f2_power * math.cos(self.an), self.y + self.f2_power * math.sin(self.an)], 3)
 
     def power_up(self):
         if self.f2_on:
@@ -217,6 +226,9 @@ while (not finished) and death_counter < 10:
                 gun.fire2_end(event)
             elif event.type == pygame.MOUSEMOTION:
                 gun.targetting(event)
+
+            if event.type == pygame.KEYDOWN:
+                gun.move(event)
 
     for b in balls:
         b.move()
